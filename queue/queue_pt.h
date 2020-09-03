@@ -42,9 +42,9 @@
 #include "ip.h"
 class Packet;
 
-class PacketQueue : public TclObject {
+class PacketQueue_pt : public TclObject {
 public:
-	PacketQueue() : head_(0), tail_(0), len_(0), bytes_(0) {}
+	PacketQueue_pt() : head_(0), tail_(0), len_(0), bytes_(0) {}
 	virtual int length() const { return (len_); }
 	virtual int byteLength() const { return (bytes_); }
 	virtual Packet* enque(Packet* p) { // Returns previous tail
@@ -108,18 +108,18 @@ private:
 	Packet *iter;
 };
 
-class Queue;
+class Queue_pt;
 
-class QueueHandler : public Handler {
+class QueueHandler_pt : public Handler {
 public:
-	inline QueueHandler(Queue& q) : queue_(q) {}
+	inline QueueHandler_pt(Queue_pt& q) : queue_(q) {}
 	void handle(Event*);
 private:
-	Queue& queue_;
+	Queue_pt& queue_;
 };
 
 
-class Queue : public Connector {
+class Queue_pt : public Connector {
 public:
 	virtual void enque(Packet*) = 0;
 	virtual Packet* deque() = 0;
@@ -141,15 +141,15 @@ public:
 	/* max utilization over recent time period.
 	   Returns the maximum of recent measurements stored in util_buf_*/
 	double peak_utilization(void);
-	virtual ~Queue();
+	virtual ~Queue_pt();
 protected:
-	Queue();
+	Queue_pt();
 	void reset();
 	int qlim_;		/* maximum allowed pkts in queue */
 	int blocked_;		/* blocked now? */
 	int unblock_on_resume_;	/* unblock q on idle? */
-	QueueHandler qh_;
-	PacketQueue *pq_;	/* pointer to actual packet queue 
+	QueueHandler_pt qh_;
+	PacketQueue_pt *pq_;	/* pointer to actual packet queue 
 				 * (maintained by the individual disciplines
 				 * like DropTail and RED). */
 	double true_ave_;	/* true long-term average queue size */
