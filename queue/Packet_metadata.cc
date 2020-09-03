@@ -5,7 +5,8 @@
 #include "Packet_metadata.h"
 
 Packet_metadata::Packet_metadata() {
-    pkt_pt = nullptr;
+    //pkt_pt = nullptr;
+    pkt_pt = 0;
     finish_time = -1;
     pkt_scheudled = true;
 }
