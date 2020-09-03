@@ -37,11 +37,11 @@ static const char rcsid[] =
     "@(#) $Header: /cvsroot/nsnam/ns-2/queue/queue.cc,v 1.29 2004/10/28 01:22:48 sfloyd Exp $ (LBL)";
 #endif
 
-#include "queue.h"
+#include "queue_pt.h"
 #include <math.h>
 #include <stdio.h>
 
-void PacketQueue::remove(Packet* target)
+void PacketQueue_pt::remove(Packet* target)
 {
 	for (Packet *pp= 0, *p= head_; p; pp= p, p= p->next_) {
 		if (p == target) {
@@ -64,11 +64,11 @@ void PacketQueue::remove(Packet* target)
  * Remove packet pkt located after packet prev on the queue.  Either p or prev
  * could be NULL.  If prev is NULL then pkt must be the head of the queue.
  */
-void PacketQueue::remove(Packet* pkt, Packet *prev) //XXX: screwy
+void PacketQueue_pt::remove(Packet* pkt, Packet *prev) //XXX: screwy
 {
 	if (pkt) {
 		if (head_ == pkt)
-			PacketQueue::deque(); /* decrements len_ internally */
+			PacketQueue_pt::deque(); /* decrements len_ internally */
 		else {
 			prev->next_ = pkt->next_;
 			if (tail_ == pkt)
@@ -80,15 +80,15 @@ void PacketQueue::remove(Packet* pkt, Packet *prev) //XXX: screwy
 	return;
 }
 
-void QueueHandler::handle(Event*)
+void QueueHandler_pt::handle(Event*)
 {
 	queue_.resume();
 }
 
-Queue::~Queue() {
+Queue_pt::~Queue_pt() {
 }
 
-Queue::Queue() : Connector(), blocked_(0), unblock_on_resume_(1), qh_(*this),
+Queue_pt::Queue_pt() : Connector(), blocked_(0), unblock_on_resume_(1), qh_(*this),
 		 pq_(0), 
 		 last_change_(0), /* temporarily NULL */
 		 old_util_(0), period_begin_(0), cur_util_(0), buf_slot_(0),
@@ -113,7 +113,7 @@ Queue::Queue() : Connector(), blocked_(0), unblock_on_resume_(1), qh_(*this),
 	}
 }
 
-void Queue::recv(Packet* p, Handler*)
+void Queue_pt::recv(Packet* p, Handler*)
 {
 	double now = Scheduler::instance().clock();
 	enque(p);
@@ -134,7 +134,7 @@ void Queue::recv(Packet* p, Handler*)
 	}
 }
 
-void Queue::utilUpdate(double int_begin, double int_end, int link_state) {
+void Queue_pt::utilUpdate(double int_begin, double int_end, int link_state) {
 double decay;
 
 	decay = exp(-util_weight_ * (int_end - int_begin));
@@ -162,7 +162,7 @@ double decay;
 	}
 }
 
-double Queue::utilization(void) 
+double Queue_pt::utilization(void) 
 {
 	double now = Scheduler::instance().clock();
 	
@@ -173,7 +173,7 @@ double Queue::utilization(void)
 			
 }
 
-double Queue::peak_utilization(void)
+double Queue_pt::peak_utilization(void)
 {
 	double now = Scheduler::instance().clock();
 	double peak = 0;
@@ -194,7 +194,7 @@ double Queue::peak_utilization(void)
 	return peak;
 }
 
-void Queue::updateStats(int queuesize)
+void Queue_pt::updateStats(int queuesize)
 {
         double now = Scheduler::instance().clock();
         double newtime = now - total_time_;
@@ -207,7 +207,7 @@ void Queue::updateStats(int queuesize)
         }
 }
 
-void Queue::resume()
+void Queue_pt::resume()
 {
 	double now = Scheduler::instance().clock();
 	Packet* p = deque();
@@ -227,7 +227,7 @@ void Queue::resume()
 	}
 }
 
-void Queue::reset()
+void Queue_pt::reset()
 {
 	Packet* p;
 	total_time_ = 0.0;
