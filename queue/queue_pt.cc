@@ -41,9 +41,9 @@ static const char rcsid[] =
 #include <math.h>
 #include <stdio.h>
 
-void PacketQueue_pt::remove(Packet* target)
+void PacketQueue_pt::remove(Packet_metadata* target)
 {
-	for (Packet *pp= 0, *p= head_; p; pp= p, p= p->next_) {
+	for (Packet_metadata *pp= 0, *p= head_; p; pp= p, p= p->next_) {
 		if (p == target) {
 			if (!pp) deque();
 			else {
@@ -51,7 +51,7 @@ void PacketQueue_pt::remove(Packet* target)
 					tail_= pp;
 				pp->next_= p->next_;
 				--len_;
-				bytes_ -= hdr_cmn::access(p)->size();
+				bytes_ -= hdr_cmn::access(p->access_pkt())->size();
 			}
 			return;
 		}
@@ -64,7 +64,7 @@ void PacketQueue_pt::remove(Packet* target)
  * Remove packet pkt located after packet prev on the queue.  Either p or prev
  * could be NULL.  If prev is NULL then pkt must be the head of the queue.
  */
-void PacketQueue_pt::remove(Packet* pkt, Packet *prev) //XXX: screwy
+void PacketQueue_pt::remove(Packet_metadata* pkt, Packet_metadata *prev) //XXX: screwy
 {
 	if (pkt) {
 		if (head_ == pkt)
@@ -74,7 +74,7 @@ void PacketQueue_pt::remove(Packet* pkt, Packet *prev) //XXX: screwy
 			if (tail_ == pkt)
 				tail_ = prev;
 			--len_;
-			bytes_ -= hdr_cmn::access(pkt)->size();
+			bytes_ -= hdr_cmn::access(pkt->access_pkt())->size();
 		}
 	}
 	return;
@@ -113,7 +113,7 @@ Queue_pt::Queue_pt() : Connector(), blocked_(0), unblock_on_resume_(1), qh_(*thi
 	}
 }
 
-void Queue_pt::recv(Packet* p, Handler*)
+void Queue_pt::recv(Packet_metadata* p, Handler*)
 {
 	double now = Scheduler::instance().clock();
 	enque(p);
@@ -210,7 +210,7 @@ void Queue_pt::updateStats(int queuesize)
 void Queue_pt::resume()
 {
 	double now = Scheduler::instance().clock();
-	Packet* p = deque();
+	Packet_metadata* p = deque();
 	if (p != 0) {
 		target_->recv(p, &qh_);
 	} else {
@@ -229,7 +229,7 @@ void Queue_pt::resume()
 
 void Queue_pt::reset()
 {
-	Packet* p;
+	Packet_metadata* p;
 	total_time_ = 0.0;
 	true_ave_ = 0.0;
 	while ((p = deque()) != 0)

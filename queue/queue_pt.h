@@ -39,16 +39,18 @@
 
 #include "connector.h"
 #include "packet.h"
+#include "Packet_metadata.h"
 #include "ip.h"
 class Packet;
+class Packet_metadata;
 
 class PacketQueue_pt : public TclObject {
 public:
 	PacketQueue_pt() : head_(0), tail_(0), len_(0), bytes_(0) {}
 	virtual int length() const { return (len_); }
 	virtual int byteLength() const { return (bytes_); }
-	virtual Packet* enque(Packet* p) { // Returns previous tail
-		Packet* pt = tail_;
+	virtual Packet_metadata* enque(Packet_metadata* p) { // Returns previous tail
+		Packet_metadata* pt = tail_;
 		if (!tail_) head_= tail_= p;
 		else {
 			tail_->next_= p;
@@ -56,56 +58,56 @@ public:
 		}
 		tail_->next_= 0;
 		++len_;
-		bytes_ += hdr_cmn::access(p)->size();
+		bytes_ += hdr_cmn::access(p->access_pkt())->size();
 		return pt;
 	}
-	virtual Packet* deque() {
+	virtual Packet_metadata* deque() {
 		if (!head_) return 0;
-		Packet* p = head_;
+		Packet_metadata* p = head_;
 		head_= p->next_; // 0 if p == tail_
 		if (p == tail_) head_= tail_= 0;
 		--len_;
-		bytes_ -= hdr_cmn::access(p)->size();
+		bytes_ -= hdr_cmn::access(p->access_pkt())->size();
 		return p;
 	}
-	Packet* lookup(int n) {
-		for (Packet* p = head_; p != 0; p = p->next_) {
+	Packet_metadata* lookup(int n) {
+		for (Packet_metadata* p = head_; p != 0; p = p->next_) {
 			if (--n < 0)
 				return (p);
 		}
 		return (0);
 	}
 	/* remove a specific packet, which must be in the queue */
-	virtual void remove(Packet*);
+	virtual void remove(Packet_metadata*);
 	/* Remove a packet, located after a given packet. Either could be 0. */
-	void remove(Packet *, Packet *);
-        Packet* head() { return head_; }
-	Packet* tail() { return tail_; }
+	void remove(Packet_metadata *, Packet_metadata *);
+        Packet_metadata* head() { return head_; }
+	Packet_metadata* tail() { return tail_; }
 	// MONARCH EXTNS
-	virtual inline void enqueHead(Packet* p) {
+	virtual inline void enqueHead(Packet_metadata* p) {
 	        if (!head_) tail_ = p;
 	        p->next_ = head_;
 		head_ = p;
 		++len_;
-		bytes_ += hdr_cmn::access(p)->size();
+		bytes_ += hdr_cmn::access(p->access_pkt())->size();
 	}
         void resetIterator() {iter = head_;}
-        Packet* getNext() { 
+        Packet_metadata* getNext() { 
 	        if (!iter) return 0;
-		Packet *tmp = iter; iter = iter->next_;
+		Packet_metadata *tmp = iter; iter = iter->next_;
 		return tmp;
 	}
 
 protected:
-	Packet* head_;
-	Packet* tail_;
+	Packet_metadata* head_;
+	Packet_metadata* tail_;
 	int len_;		// packet count
 	int bytes_;		// queue size in bytes
 
 
 // MONARCH EXTNS
 private:
-	Packet *iter;
+	Packet_metadata *iter;
 };
 
 class Queue_pt;
@@ -121,9 +123,9 @@ private:
 
 class Queue_pt : public Connector {
 public:
-	virtual void enque(Packet*) = 0;
-	virtual Packet* deque() = 0;
-	virtual void recv(Packet*, Handler*);
+	virtual void enque(Packet_metadata*) = 0;
+	virtual Packet_metadata* deque() = 0;
+	virtual void recv(Packet_metadata*, Handler*);
 	virtual void updateStats(int queuesize); 
 	void resume();
 	
