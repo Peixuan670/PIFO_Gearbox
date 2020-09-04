@@ -113,7 +113,7 @@ Queue_pt::Queue_pt() : Connector(), blocked_(0), unblock_on_resume_(1), qh_(*thi
 	}
 }
 
-void Queue_pt::recv(Packet* p, Handler*)			// 09042020 Peixuan: Stick to NS2 standard using Packet
+void Queue_pt::recv(Packet_metadata* p, Handler*)			// 09042020 Peixuan: Stick to NS2 standard using Packet
 {
 	double now = Scheduler::instance().clock();
 	enque(p);
@@ -129,7 +129,7 @@ void Queue_pt::recv(Packet* p, Handler*)			// 09042020 Peixuan: Stick to NS2 sta
 			utilUpdate(last_change_, now, blocked_);
 			last_change_ = now;
 			blocked_ = 1;
-			target_->recv(p, &qh_);
+			target_->recv(p->access_pkt, &qh_);
 		}
 	}
 }
@@ -227,12 +227,12 @@ void Queue_pt::resume()
 	}
 }
 
-void Queue_pt::reset()						// 09042020 Peixuan: Stick to NS2 standard using Packet
+/*void Queue_pt::reset()						// 09042020 Peixuan: Stick to NS2 standard using Packet
 {
 	Packet* p;
 	total_time_ = 0.0;
 	true_ave_ = 0.0;
 	while ((p = deque()) != 0)
 		drop(p);
-}
+}*/
 
