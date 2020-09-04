@@ -113,7 +113,7 @@ Queue_pt::Queue_pt() : Connector(), blocked_(0), unblock_on_resume_(1), qh_(*thi
 	}
 }
 
-/*void Queue_pt::recv(Packet_metadata* p, Handler*)			// 09042020 Peixuan: Stick to NS2 standard using Packet
+void Queue_pt::recv(Packet_metadata* p, Handler*)			// 09042020 Peixuan: Stick to NS2 standard using Packet
 {
 	double now = Scheduler::instance().clock();
 	enque(p);
@@ -124,7 +124,7 @@ Queue_pt::Queue_pt() : Connector(), blocked_(0), unblock_on_resume_(1), qh_(*thi
 		 * might drop the packet even if it was
 		 * previously empty!  (e.g., RED can do this.)
 		 */
-/*		p = deque();
+		p = deque();
 		if (p != 0) {
 			utilUpdate(last_change_, now, blocked_);
 			last_change_ = now;
@@ -132,7 +132,7 @@ Queue_pt::Queue_pt() : Connector(), blocked_(0), unblock_on_resume_(1), qh_(*thi
 			target_->recv(p->access_pkt, &qh_);
 		}
 	}
-}*/
+}
 
 void Queue_pt::utilUpdate(double int_begin, double int_end, int link_state) {
 double decay;
@@ -227,12 +227,12 @@ void Queue_pt::resume()
 	}
 }
 
-/*void Queue_pt::reset()						// 09042020 Peixuan: Stick to NS2 standard using Packet
+void Queue_pt::reset()						// 09042020 Peixuan: Stick to NS2 standard using Packet
 {
-	Packet* p;
+	Packet_metadata* p;
 	total_time_ = 0.0;
 	true_ave_ = 0.0;
 	while ((p = deque()) != 0)
-		drop(p);
-}*/
+		drop(p->access_pkt());
+}
 
