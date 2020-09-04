@@ -129,7 +129,7 @@ void Queue_pt::recv(Packet_metadata* p, Handler*)			// 09042020 Peixuan: Stick t
 			utilUpdate(last_change_, now, blocked_);
 			last_change_ = now;
 			blocked_ = 1;
-			target_->recv(p->access_pkt, &qh_);
+			target_->recv(p->access_pkt(), &qh_);
 		}
 	}
 }
