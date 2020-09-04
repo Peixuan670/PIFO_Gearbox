@@ -10,13 +10,13 @@ Level_pt::Level_pt(): volume(10), currentIndex(0) {
 
     // Debug: Peixuan 07062019 Level_pt Constructor
     for (int i=0; i<10; i++) {
-        fifos[i] = new PacketQueue;
+        fifos[i] = new PacketQueue_pt;
     }
     //fprintf(stderr, "Constructed Level_pt\n"); // Debug: Peixuan 07062019
 
 }
 
-void Level_pt::enque(Packet* packet, int index) {
+void Level_pt::enque(Packet_metadata* packet, int index) {
     // packet.setInsertFifo(index);
     // packet.setFifoPosition(static_cast<int>(fifos[index].size()));
     // hdr_ip* iph = hdr_ip::access(packet);
@@ -24,8 +24,8 @@ void Level_pt::enque(Packet* packet, int index) {
     fifos[index]->enque(packet);
 }
 
-Packet* Level_pt::deque() {
-    Packet *packet;
+Packet_metadata* Level_pt::deque() {
+    Packet_metadata *packet;
 
     fprintf(stderr, "Dequeue from this Level_pt\n"); // Debug: Peixuan 07062019
 
