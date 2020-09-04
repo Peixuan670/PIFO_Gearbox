@@ -23,10 +23,12 @@ private:
     int finish_time;
 
 public:
+    Packet_metadata* next_;
     Packet_metadata();
     Packet_metadata(Packet* packet, int finishtime);
 
-    Packet* get_pkt();
+    Packet* serve_pkt();
+    Packet* access_pkt();
     bool isScheduled();
     int get_finish_time();
 

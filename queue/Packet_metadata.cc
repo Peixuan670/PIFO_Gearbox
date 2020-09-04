@@ -17,8 +17,12 @@ Packet_metadata::Packet_metadata(Packet* packet, int finishtime) {
     pkt_scheudled = false;
 }
 
-Packet* Packet_metadata::get_pkt() {
+Packet* Packet_metadata::serve_pkt() {
     pkt_scheudled = true;               // mark this pkt is scheduled
+    return pkt_pt;
+}
+
+Packet* Packet_metadata::access_pkt() {
     return pkt_pt;
 }
 
