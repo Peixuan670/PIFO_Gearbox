@@ -109,6 +109,7 @@ void PIFOGearbox_pl::enque(Packet* packet) {
 
     fprintf(stderr, "Level 1 insert B: %d, Level 0 insert B: %d\n", level1InsertingB, level0InsertingB); // Debug: Peixuan 07072019
 
+    Packet_metadata* pkt_mt = new Packet_metadata(packet, departureRound); // 09052020 Peixuan: encapsulating pkt into metadata
 
     if (departureRound / 100 - currentRound / 100 > 1 || insertLevel == 2) {
         //fprintf(stderr, "Enqueue Level 2\n"); // Debug: Peixuan 07072019
