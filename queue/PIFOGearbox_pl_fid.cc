@@ -66,14 +66,8 @@ void PIFOGearbox_pl::enque(Packet* packet) {
     /* With departureRound and currentRound, we can get the insertLevel, insertLevel is a parameter of flow and we can set and read this variable.
     */
 
-    //int flowId = iph->flowid();
-    //string key = convertKeyValue(iph->saddr(), iph->daddr());
     string key = convertKeyValue(iph->flowid()); // Peixuan 04212020 fid
-    // Not find the current key
     if (flowMap.find(key) == flowMap.end()) {
-        //flowMap[key] = Flow_pl(iph->saddr, iph->daddr, 2, 100);
-        //insertNewFlowPtr(iph->saddr(), iph->daddr(), 2, 100);
-        //this->insertNewFlowPtr(iph->saddr(), iph->daddr(), DEFAULT_WEIGHT, DEFAULT_BRUSTNESS);
         this->insertNewFlowPtr(iph->flowid(), DEFAULT_WEIGHT, DEFAULT_BRUSTNESS); // Peixuan 04212020 fid
     }
 
@@ -99,7 +93,6 @@ void PIFOGearbox_pl::enque(Packet* packet) {
     }
 
     currFlow->setLastDepartureRound(departureRound);     // 07102019 Peixuan: only update last packet finish time if the packet wasn't dropped
-    //this->updateFlowPtr(iph->saddr(), iph->daddr(), currFlow);  //12182019 Peixuan
     this->updateFlowPtr(iph->flowid(), currFlow);  // Peixuan 04212020 fid
     
     fprintf(stderr, "At Round: %d, Enqueue Packet from Flow %d with Finish time = %d.\n", currentRound, iph->saddr(), departureRound); // Debug: Peixuan 07072019
@@ -186,21 +179,12 @@ void PIFOGearbox_pl::enque(Packet* packet) {
 
 // Peixuan: This can be replaced by any other algorithms
 int PIFOGearbox_pl::cal_theory_departure_round(hdr_ip* iph, int pkt_size) {
-    //int		fid_;	/* flow id */
-    //int		prio_;
-    // parameters in iph
-    // TODO
-
-    // Peixuan 06242019
-    // For simplicity, we assume flow id = the index of array 'flows'
-
+    
     fprintf(stderr, "$$$$$Calculate Departure Round at VC = %d\n", currentRound); // Debug: Peixuan 07062019
 
     string key = convertKeyValue(iph->flowid());    // Peixuan 04212020 fid
 
     Flow_pl* currFlow = this->getFlowPtr(iph->flowid()); // Peixuan 04212020 fid
-
-
 
     float curWeight = currFlow->getWeight();
     int curLastDepartureRound = currFlow->getLastDepartureRound();
@@ -224,6 +208,20 @@ int PIFOGearbox_pl::cal_theory_departure_round(hdr_ip* iph, int pkt_size) {
 //06262019 Static getting all the departure packet in this virtual clock unit (JUST FOR SIMULATION PURPUSE!)
 
 Packet* PIFOGearbox_pl::deque() {
+
+
+    // Peixuan 10232020:
+    // find all level PIFO smallest pkts
+    // Compare with smallest pkt in level 0
+    // get such packet pkt (level[x]->deque())
+    // if (x>0) {if (level[x]->ifReload) {level[x]->StartReload}}
+    // update VC
+    // TODO: do we need to exam if we need to start migrate / Or just migrate
+    // for(int iter = 0; iter < spdUpFactor; iter++) 
+    //      {If pkt need to reload > 0 -> each level reload} 
+    //      {If fifo[currentIndex]->length > 0 -> each level migrate}
+
+
 
     fprintf(stderr, "Start Dequeue\n"); // Debug: Peixuan 07062019
 
